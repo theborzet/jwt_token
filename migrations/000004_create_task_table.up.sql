@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
-    userId INT REFERENCES users(id),
+    userId INT REFERENCES users(id) ON DELETE CASCADE,
     taskName VARCHAR(100),
     startTime TIMESTAMP,
     endTime TIMESTAMP

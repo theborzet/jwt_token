@@ -8,33 +8,36 @@ import (
 
 // GetUserTasks обрабатывает GET запрос для получения задач пользователя.
 // @Summary Получить задачи пользователя
-// @Description Получает задачи пользователя с заданными параметрами пагинации и временем.
+// @Description Получает задачи пользователя с заданными параметрами пагинации и времени.
 // @Accept json
 // @Produce json
 // @Param userId query int true "ID пользователя"
 // @Param startTime query string false "Начальное время"
 // @Param endTime query string false "Конечное время"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Success 200 {object} CommonResponse{data=[]models.Task}
+// @Failure 400 {object} ErrorResponse
 // @Router /user/tasks [get]
 func (h *ApiHandler) GetUserTasks(ctx *fiber.Ctx) error {
 	userId, err := strconv.Atoi(ctx.Query("userId"))
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid userId"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Invalid userId"})
 	}
 	startTime := ctx.Query("startTime")
 	endTime := ctx.Query("endTime")
 
 	tasks, err := h.serv.GetUserTasks(userId, startTime, endTime)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "server error",
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "server error",
 		})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"tasks": tasks,
+	return ctx.JSON(CommonResponse{
+		Message: "Request processed",
+		Data:    tasks,
 	})
 }
 
@@ -45,26 +48,28 @@ func (h *ApiHandler) GetUserTasks(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param userId query int true "ID пользователя"
 // @Param taskName query string true "Название задачи"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Success 200 {object} CommonResponse
+// @Failure 400 {object} ErrorResponse
 // @Router /task/start [post]
 func (h *ApiHandler) StartTask(ctx *fiber.Ctx) error {
 	userId, err := strconv.Atoi(ctx.Query("userId"))
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid userId"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Invalid userId"})
 	}
 
 	taskName := ctx.Query("taskName")
 
 	if err := h.serv.StartTask(userId, taskName); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "server error",
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Server error",
 		})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "start success",
+	return ctx.JSON(CommonResponse{
+		Message: "Start success",
 	})
 }
 
@@ -75,25 +80,27 @@ func (h *ApiHandler) StartTask(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param userId query int true "ID пользователя"
 // @Param taskName query string true "Название задачи"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Success 200 {object} CommonResponse
+// @Failure 400 {object} ErrorResponse
 // @Router /task/end [post]
 func (h *ApiHandler) EndTask(ctx *fiber.Ctx) error {
 	userId, err := strconv.Atoi(ctx.Query("userId"))
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid userId"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Invalid userId"})
 	}
 
 	taskName := ctx.Query("taskName")
 
 	if err := h.serv.EndTask(userId, taskName); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "server error",
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Server error",
 		})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "end success",
+	return ctx.JSON(CommonResponse{
+		Message: "End success",
 	})
 }

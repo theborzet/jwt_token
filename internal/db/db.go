@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -12,11 +13,11 @@ import (
 
 var DB *sqlx.DB
 
-func Init(cfg *config.Config) *sqlx.DB {
+func Init(cfg *config.Config) *sql.DB {
 	url := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Pass, cfg.DB.Name)
 
-	db, err := sqlx.Open("postgres", url)
+	db, err := sql.Open("postgres", url)
 
 	if err != nil {
 		log.Fatalln(err)
@@ -25,7 +26,7 @@ func Init(cfg *config.Config) *sqlx.DB {
 	return db
 }
 
-func Close(db *sqlx.DB) error {
+func Close(db *sql.DB) error {
 	if err := db.Close(); err != nil {
 		return err
 	}

@@ -1,11 +1,30 @@
 package handler
 
-import "github.com/theborzet/time-tracker/internal/service"
+import (
+	"log"
 
-type ApiHandler struct {
-	serv *service.ApiService
+	"github.com/theborzet/time-tracker/internal/pagination"
+	"github.com/theborzet/time-tracker/internal/service"
+)
+
+type CommonResponse struct {
+	Message   string                `json:"message"`
+	Data      interface{}           `json:"data,omitempty"`
+	Paginator *pagination.Paginator `json:"paginator,omitempty"`
 }
 
-func NewApiHandler(serv *service.ApiService) *ApiHandler {
-	return &ApiHandler{serv: serv}
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+}
+
+type ApiHandler struct {
+	serv   *service.ApiService
+	logger *log.Logger
+}
+
+func NewApiHandler(serv *service.ApiService, logger *log.Logger) *ApiHandler {
+	return &ApiHandler{
+		serv:   serv,
+		logger: logger}
 }

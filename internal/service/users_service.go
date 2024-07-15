@@ -18,10 +18,10 @@ func InputDataError(user *models.User) error {
 	if err != nil {
 		return errors.New("passport serie must be a valid number")
 	}
-	if len(user.PassportNumber) != 4 && passportNumberInt <= 0 {
+	if len(user.PassportNumber) != 6 && passportNumberInt <= 0 {
 		return errors.New("incorrect passport_number data")
 	}
-	if len(user.PassportSerie) != 6 && passportSerieInt <= 0 {
+	if len(user.PassportSerie) != 4 && passportSerieInt <= 0 {
 		return errors.New("incorrect passport_serie data")
 	}
 	if user.Surname == "" || user.Name == "" {

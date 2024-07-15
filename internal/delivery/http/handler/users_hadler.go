@@ -7,6 +7,15 @@ import (
 	"github.com/theborzet/time-tracker/internal/models"
 )
 
+type CreateUser struct {
+	PassportNumber string `json:"passportNumber"`
+	PassportSerie  string `json:"passportSerie"`
+	Surname        string `json:"surname"`
+	Name           string `json:"name"`
+	Patronymic     string `json:"patronymic"`
+	Address        string `json:"address"`
+}
+
 // GetUsers обрабатывает GET запрос для получения списка пользователей с учетом фильтров и пагинации.
 // @Summary Получить список пользователей
 // @Description Получает список пользователей с учетом заданных фильтров и страницы.
@@ -14,28 +23,36 @@ import (
 // @Produce json
 // @Param page query int false "Номер страницы"
 // @Param filters query string false "Фильтры"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Success 200 {object} CommonResponse{data=[]models.User}
+// @Failure 400 {object} ErrorResponse
 // @Router /user/ [get]
 func (h *ApiHandler) GetUsers(ctx *fiber.Ctx) error {
 	filters := make(map[string]string)
 
-	if err := ctx.QueryParser(&filters); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	for key, values := range ctx.Queries() {
+		if len(values) > 0 {
+			filters[key] = values
+		}
 	}
 
 	page, err := strconv.Atoi(ctx.Query("page", "1"))
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid page number"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "invalid page number"})
 	}
 	users, paginator, err := h.serv.GetUsersWithPaginate(filters, page)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Server error",
+		})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"users":     users,
-		"paginator": paginator,
+	return ctx.JSON(CommonResponse{
+		Data:      users,
+		Paginator: paginator,
+		Message:   "Request processed",
 	})
 }
 
@@ -44,27 +61,27 @@ func (h *ApiHandler) GetUsers(ctx *fiber.Ctx) error {
 // @Description Создает нового пользователя на основе переданных данных.
 // @Accept json
 // @Produce json
-// @Param user body models.User true "Данные пользователя"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Param user body CreateUser true "Данные пользователя"
+// @Success 200 {object} CommonResponse
+// @Failure 400 {object} ErrorResponse
 // @Router /user/create [post]
 func (h *ApiHandler) CreateUser(ctx *fiber.Ctx) error {
 	var user *models.User
 
 	if err := ctx.BodyParser(&user); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "invalid user data"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Invalid user data"})
 	}
 
 	if err := h.serv.CreateUser(user); err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "failed to create user"})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Failed to create user"})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "user created successfully",
+	return ctx.JSON(CommonResponse{
+		Message: "User created successfully",
 	})
 
 }
@@ -75,26 +92,26 @@ func (h *ApiHandler) CreateUser(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body models.User true "Данные пользователя"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Success 200 {object} CommonResponse
+// @Failure 400 {object} ErrorResponse
 // @Router /user/update [put]
 func (h *ApiHandler) UpdateUser(ctx *fiber.Ctx) error {
 	var user *models.User
 
 	if err := ctx.BodyParser(&user); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "invalid user data"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Invalid user data"})
 	}
 
 	if err := h.serv.UpdateUser(user); err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "failed to update user"})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Failed to update user"})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "user update successfully",
+	return ctx.JSON(CommonResponse{
+		Message: "user update successfully",
 	})
 
 }
@@ -105,24 +122,24 @@ func (h *ApiHandler) UpdateUser(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID пользователя"
-// @Success 200 {object} fiber.Map
-// @Failure 400 {object} fiber.Map
+// @Success 200 {object} CommonResponse
+// @Failure 400 {object} ErrorResponse
 // @Router /user/{id} [delete]
 func (h *ApiHandler) DeleteUser(ctx *fiber.Ctx) error {
 	usrIdStr, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "invalid user ID"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Invalid user ID"})
 	}
 	if err := h.serv.DeleteUser(usrIdStr); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   err.Error(),
-			"message": "server error with delete user"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
+			Error:   err.Error(),
+			Message: "Server error with delete user"})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"message": "user delete successfully",
+	return ctx.JSON(CommonResponse{
+		Message: "user delete successfully",
 	})
 
 }

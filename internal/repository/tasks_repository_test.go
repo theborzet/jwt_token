@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"log"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/theborzet/time-tracker/internal/models"
 )
@@ -15,9 +15,8 @@ func TestGetUserTasks(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
-
-	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	repo := NewApiRepository(sqlxDB)
+	logger := log.New(nil, "", 0)
+	repo := NewApiRepository(db, logger)
 
 	userID := 1
 	start := "2023-01-01"
@@ -32,7 +31,7 @@ func TestGetUserTasks(t *testing.T) {
 		AddRow("task1", 60).
 		AddRow("task2", 30)
 
-	mock.ExpectQuery(`SELECT taskName, EXTRACT\(EPOCH FROM \(endTime - startTime\)\)\/60 as timeSpent FROM tasks WHERE userId = \$1 AND startTime >= \$2 AND endTime <= \$3 ORDER BY timeSpent DESC$`).
+	mock.ExpectQuery(`SELECT taskName, EXTRACT\(EPOCH FROM \(endTime - startTime\)\)\/60 as timeSpent FROM tasks WHERE userId = \$1 AND startTime >= \$2 AND endTime <= \$3 ORDER BY timeSpent DESC`).
 		WithArgs(userID, start, end).
 		WillReturnRows(rows)
 
@@ -57,9 +56,8 @@ func TestStartTask(t *testing.T) {
 		t.Fatalf("an error '%s' occurred when opening a stub database connection", err)
 	}
 	defer db.Close()
-
-	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	repo := NewApiRepository(sqlxDB)
+	logger := log.New(nil, "", 0)
+	repo := NewApiRepository(db, logger)
 
 	userID := 1
 	taskName := "Task 1"
@@ -85,18 +83,18 @@ func TestEndTask(t *testing.T) {
 		t.Fatalf("an error '%s' occurred when opening a stub database connection", err)
 	}
 	defer db.Close()
+	logger := log.New(nil, "", 0)
+	repo := NewApiRepository(db, logger)
 
-	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	repo := NewApiRepository(sqlxDB)
-
-	userID := 1
+	userId := 1
+	taskName := "Полить цветы"
 	endTime := "2023-07-15 10:00:00"
 
-	mock.ExpectExec(`UPDATE tasks SET endTime = (.+) WHERE userId = (.+) AND endTime IS NULL`).
-		WithArgs(endTime, userID).
-		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(`UPDATE tasks SET endTime = (.+) WHERE userId = (.+) AND taskName = (.+) AND endTime IS NULL`).
+		WithArgs(endTime, userId, taskName).
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	err = repo.EndTask(userID, endTime)
+	err = repo.EndTask(userId, taskName, endTime)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}

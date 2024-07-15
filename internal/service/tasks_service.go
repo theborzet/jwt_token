@@ -59,7 +59,7 @@ func (s *ApiService) EndTask(userId int, taskName string) error {
 		return errors.New("incorrect userId value")
 	}
 	endTime := time.Now()
-	if err := s.repo.StartTask(userId, taskName, endTime.Format(repository.TimestampFormat)); err != nil {
+	if err := s.repo.EndTask(userId, taskName, endTime.Format(repository.TimestampFormat)); err != nil {
 		return err
 	}
 	return nil

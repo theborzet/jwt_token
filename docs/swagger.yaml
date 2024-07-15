@@ -1,0 +1,304 @@
+basePath: /
+definitions:
+  handler.CommonResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      paginator:
+        $ref: '#/definitions/pagination.Paginator'
+    type: object
+  handler.CreateUser:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      passportNumber:
+        type: string
+      passportSerie:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  models.Task:
+    properties:
+      endTime:
+        type: string
+      id:
+        type: integer
+      startTime:
+        type: string
+      taskName:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      passportNumber:
+        type: string
+      passportSerie:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+  pagination.PageNumber:
+    properties:
+      is_active:
+        type: boolean
+      number:
+        type: integer
+      url:
+        type: string
+    type: object
+  pagination.Paginator:
+    properties:
+      current_page:
+        type: integer
+      has_next:
+        type: boolean
+      has_previous:
+        type: boolean
+      next_page:
+        type: integer
+      page_numbers:
+        items:
+          $ref: '#/definitions/pagination.PageNumber'
+        type: array
+      page_size:
+        type: integer
+      previous_page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: API for managing time tracking tasks
+  termsOfService: https://example.com/terms/
+  title: Time Tracker API
+  version: "1.0"
+paths:
+  /task/end:
+    post:
+      consumes:
+      - application/json
+      description: Завершает задачу для указанного пользователя с заданным названием
+        задачи.
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: userId
+        required: true
+        type: integer
+      - description: Название задачи
+        in: query
+        name: taskName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Завершить задачу
+  /task/start:
+    post:
+      consumes:
+      - application/json
+      description: Начинает задачу для указанного пользователя с заданным названием
+        задачи.
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: userId
+        required: true
+        type: integer
+      - description: Название задачи
+        in: query
+        name: taskName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Начать задачу
+  /user/:
+    get:
+      consumes:
+      - application/json
+      description: Получает список пользователей с учетом заданных фильтров и страницы.
+      parameters:
+      - description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - description: Фильтры
+        in: query
+        name: filters
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.CommonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.User'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Получить список пользователей
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет пользователя на основе его идентификатора.
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Удалить пользователя
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя на основе переданных данных.
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Создать пользователя
+  /user/tasks:
+    get:
+      consumes:
+      - application/json
+      description: Получает задачи пользователя с заданными параметрами пагинации
+        и времени.
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: userId
+        required: true
+        type: integer
+      - description: Начальное время
+        in: query
+        name: startTime
+        type: string
+      - description: Конечное время
+        in: query
+        name: endTime
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.CommonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Task'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Получить задачи пользователя
+  /user/update:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные пользователя на основе переданных данных.
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Обновить пользователя
+swagger: "2.0"

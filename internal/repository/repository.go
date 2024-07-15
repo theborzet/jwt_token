@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"github.com/theborzet/time-tracker/internal/models"
+	"database/sql"
+	"log"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/theborzet/time-tracker/internal/models"
 )
 
 const (
@@ -23,11 +24,13 @@ type Repository interface {
 }
 
 type ApiRepository struct {
-	db *sqlx.DB
+	db     *sql.DB
+	logger *log.Logger
 }
 
-func NewApiRepository(db *sqlx.DB) *ApiRepository {
+func NewApiRepository(db *sql.DB, logger *log.Logger) *ApiRepository {
 	return &ApiRepository{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }

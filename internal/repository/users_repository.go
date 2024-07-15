@@ -17,8 +17,9 @@ func (r *ApiRepository) GetUsers(filter map[string]string) ([]*models.User, erro
 		args = append(args, v)
 	}
 
-	rows, err := r.db.Queryx(query, args...)
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
+		r.logger.Printf("Error querying users: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -27,12 +28,14 @@ func (r *ApiRepository) GetUsers(filter map[string]string) ([]*models.User, erro
 		var user models.User
 		err := rows.Scan(&user.ID, &user.PassportNumber, &user.PassportSerie, &user.Surname, &user.Name, &user.Patronymic, &user.Address)
 		if err != nil {
+			r.logger.Printf("Error scanning user row: %v", err)
 			return nil, err
 		}
 		users = append(users, &user)
 	}
 
 	if err := rows.Err(); err != nil {
+		r.logger.Printf("Error iterating over user rows: %v", err)
 		return nil, err
 	}
 
@@ -41,8 +44,10 @@ func (r *ApiRepository) GetUsers(filter map[string]string) ([]*models.User, erro
 
 func (r *ApiRepository) GetUserByID(id int) (*models.User, error) {
 	var user models.User
-	err := r.db.Get(&user, "SELECT * FROM users WHERE id = $1", id)
+	err := r.db.QueryRow("SELECT * FROM users WHERE id = $1", id).
+		Scan(&user.ID, &user.PassportNumber, &user.PassportSerie, &user.Surname, &user.Name, &user.Patronymic, &user.Address)
 	if err != nil {
+		r.logger.Printf("Error getting user by ID: %v", err)
 		return nil, err
 	}
 	return &user, nil
@@ -52,17 +57,35 @@ func (r *ApiRepository) CreateUser(user *models.User) error {
 	_, err := r.db.Exec(`INSERT INTO users (passportNumber, passportSerie, surname, name, patronymic, address) 
                          VALUES ($1, $2, $3, $4, $5, $6)`,
 		user.PassportNumber, user.PassportSerie, user.Surname, user.Name, user.Patronymic, user.Address)
+	if err != nil {
+		r.logger.Printf("Error creating user: %v", err)
+	}
 	return err
 }
 
 func (r *ApiRepository) UpdateUser(user *models.User) error {
-	_, err := r.db.Exec(`UPDATE users SET passportNumber=$1, passportSerie=$2, surname=$3, name=$4, patronymic=$5, address=$6 
+	result, err := r.db.Exec(`UPDATE users SET passportNumber=$1, passportSerie=$2, surname=$3, name=$4, patronymic=$5, address=$6 
                          WHERE id=$7`,
 		user.PassportNumber, user.PassportSerie, user.Surname, user.Name, user.Patronymic, user.Address, user.ID)
+	if err != nil {
+		r.logger.Printf("Error updating user: %v", err)
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		r.logger.Printf("Error getting rows affected: %v\n", err)
+		return err
+	}
+	if rowsAffected == 0 {
+		r.logger.Printf("No rows were updated for task ending\n")
+		return fmt.Errorf("no rows were updated")
+	}
 	return err
 }
 
 func (r *ApiRepository) DeleteUser(id int) error {
 	_, err := r.db.Exec("DELETE FROM users WHERE id = $1", id)
+	if err != nil {
+		r.logger.Printf("Error deleting user: %v", err)
+	}
 	return err
 }

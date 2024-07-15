@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	Port    string        `yaml:"port"`
-	DB      DBConfig      `yaml:"db"`
-	Binance BinanceConfig `yaml:"binance"`
+	Port        string      `yaml:"port"`
+	DB          DBConfig    `yaml:"db"`
+	ExternalApi ExternalApi `yaml:"externalApi"`
 }
 
 type DBConfig struct {
@@ -20,7 +20,7 @@ type DBConfig struct {
 	Name string `yaml:"name"`
 }
 
-type BinanceConfig struct {
+type ExternalApi struct {
 	APIURL string `yaml:"api_url"`
 }
 

@@ -2,7 +2,9 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/theborzet/time-tracker/internal/models"
 	"github.com/theborzet/time-tracker/internal/pagination"
@@ -56,10 +58,32 @@ func (s *ApiService) GetUserByID(userID int) (*models.User, error) {
 	return user, nil
 }
 
-func (s *ApiService) CreateUser(user *models.User) error {
+func (s *ApiService) CreateUser(passportNumber string) error {
+	passportParts := strings.Split(passportNumber, " ")
+	if len(passportParts) != 2 {
+		return errors.New("Invalid passport format. Passport number should be in format '1234 567890'")
+	}
+
+	passportSerie := passportParts[0]
+	passportNum := passportParts[1]
+
+	peopleInfo, err := s.exApi.FetchPeopleInfo(passportSerie, passportNum)
+	if err != nil {
+		return fmt.Errorf("failed to fetch people info: %w", err)
+	}
+
+	user := &models.User{
+		PassportSerie:  passportSerie,
+		PassportNumber: passportNum,
+		Surname:        peopleInfo.Surname,
+		Name:           peopleInfo.Name,
+		Patronymic:     peopleInfo.Patronymic,
+		Address:        peopleInfo.Address,
+	}
 	if err := InputDataError(user); err != nil {
 		return err
 	}
+
 	if err := s.repo.CreateUser(user); err != nil {
 		return err
 	}

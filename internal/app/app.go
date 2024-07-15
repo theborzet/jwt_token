@@ -36,7 +36,7 @@ func Run() {
 
 	repo := repository.NewApiRepository(db, debugLogger)
 
-	service := service.NewApiService(repo, debugLogger)
+	service := service.NewApiService(repo, debugLogger, config)
 
 	handler := handler.NewApiHandler(service, debugLogger)
 

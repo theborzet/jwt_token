@@ -7,13 +7,8 @@ import (
 	"github.com/theborzet/time-tracker/internal/models"
 )
 
-type CreateUser struct {
+type request struct {
 	PassportNumber string `json:"passportNumber"`
-	PassportSerie  string `json:"passportSerie"`
-	Surname        string `json:"surname"`
-	Name           string `json:"name"`
-	Patronymic     string `json:"patronymic"`
-	Address        string `json:"address"`
 }
 
 // GetUsers обрабатывает GET запрос для получения списка пользователей с учетом фильтров и пагинации.
@@ -61,20 +56,20 @@ func (h *ApiHandler) GetUsers(ctx *fiber.Ctx) error {
 // @Description Создает нового пользователя на основе переданных данных.
 // @Accept json
 // @Produce json
-// @Param user body CreateUser true "Данные пользователя"
+// @Param passporNumber body request true "Данные пользователя"
 // @Success 200 {object} CommonResponse
 // @Failure 400 {object} ErrorResponse
 // @Router /user/create [post]
 func (h *ApiHandler) CreateUser(ctx *fiber.Ctx) error {
-	var user *models.User
+	var req request
 
-	if err := ctx.BodyParser(&user); err != nil {
+	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
 			Error:   err.Error(),
-			Message: "Invalid user data"})
+			Message: "Invalid passport number"})
 	}
 
-	if err := h.serv.CreateUser(user); err != nil {
+	if err := h.serv.CreateUser(req.PassportNumber); err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{
 			Error:   err.Error(),
 			Message: "Failed to create user"})

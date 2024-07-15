@@ -168,11 +168,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Данные пользователя",
-                        "name": "user",
+                        "name": "passporNumber",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateUser"
+                            "$ref": "#/definitions/handler.request"
                         }
                     }
                 ],
@@ -340,29 +340,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.CreateUser": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "passportNumber": {
-                    "type": "string"
-                },
-                "passportSerie": {
-                    "type": "string"
-                },
-                "patronymic": {
-                    "type": "string"
-                },
-                "surname": {
-                    "type": "string"
-                }
-            }
-        },
         "handler.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -370,6 +347,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.request": {
+            "type": "object",
+            "properties": {
+                "passportNumber": {
                     "type": "string"
                 }
             }

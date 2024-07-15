@@ -8,26 +8,16 @@ definitions:
       paginator:
         $ref: '#/definitions/pagination.Paginator'
     type: object
-  handler.CreateUser:
-    properties:
-      address:
-        type: string
-      name:
-        type: string
-      passportNumber:
-        type: string
-      passportSerie:
-        type: string
-      patronymic:
-        type: string
-      surname:
-        type: string
-    type: object
   handler.ErrorResponse:
     properties:
       error:
         type: string
       message:
+        type: string
+    type: object
+  handler.request:
+    properties:
+      passportNumber:
         type: string
     type: object
   models.Task:
@@ -222,10 +212,10 @@ paths:
       parameters:
       - description: Данные пользователя
         in: body
-        name: user
+        name: passporNumber
         required: true
         schema:
-          $ref: '#/definitions/handler.CreateUser'
+          $ref: '#/definitions/handler.request'
       produces:
       - application/json
       responses:

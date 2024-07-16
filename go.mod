@@ -8,10 +8,10 @@ require (
 	github.com/gofiber/swagger v1.1.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/swag v1.16.3
-	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

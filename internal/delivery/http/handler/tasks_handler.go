@@ -48,7 +48,7 @@ func (h *ApiHandler) GetUserTasks(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param userId query int true "ID пользователя"
 // @Param taskName query string true "Название задачи"
-// @Success 200 {object} CommonResponse
+// @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
 // @Router /task/start [post]
 func (h *ApiHandler) StartTask(ctx *fiber.Ctx) error {
@@ -80,7 +80,7 @@ func (h *ApiHandler) StartTask(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param userId query int true "ID пользователя"
 // @Param taskName query string true "Название задачи"
-// @Success 200 {object} CommonResponse
+// @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
 // @Router /task/end [post]
 func (h *ApiHandler) EndTask(ctx *fiber.Ctx) error {

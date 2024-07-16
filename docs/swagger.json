@@ -7,7 +7,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:3000",
+    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/task/end": {
@@ -40,7 +40,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CommonResponse"
+                            "$ref": "#/definitions/handler.SuccessResponse"
                         }
                     },
                     "400": {
@@ -82,7 +82,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CommonResponse"
+                            "$ref": "#/definitions/handler.SuccessResponse"
                         }
                     },
                     "400": {
@@ -113,8 +113,38 @@
                     },
                     {
                         "type": "string",
-                        "description": "Фильтры",
-                        "name": "filters",
+                        "description": "Номер паспорта",
+                        "name": "passportNumber",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Серия паспорта",
+                        "name": "passportSerie",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Фамилия",
+                        "name": "surname",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Имя",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Отчество",
+                        "name": "patronymic",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Адрес",
+                        "name": "address",
                         "in": "query"
                     }
                 ],
@@ -174,7 +204,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CommonResponse"
+                            "$ref": "#/definitions/handler.SuccessResponse"
                         }
                     },
                     "400": {
@@ -273,7 +303,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CommonResponse"
+                            "$ref": "#/definitions/handler.SuccessResponse"
                         }
                     },
                     "400": {
@@ -308,7 +338,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CommonResponse"
+                            "$ref": "#/definitions/handler.SuccessResponse"
                         }
                     },
                     "400": {
@@ -340,6 +370,14 @@
                 "error": {
                     "type": "string"
                 },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.SuccessResponse": {
+            "type": "object",
+            "properties": {
                 "message": {
                     "type": "string"
                 }

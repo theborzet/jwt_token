@@ -47,17 +47,6 @@ func (s *ApiService) GetUsersWithPaginate(filters map[string]string, page int) (
 	return pagintatedUsers, &paginator, nil
 }
 
-func (s *ApiService) GetUserByID(userID int) (*models.User, error) {
-	if userID <= 0 {
-		return nil, errors.New("incorrect userId value")
-	}
-	user, err := s.repo.GetUserByID(userID)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
 func (s *ApiService) CreateUser(passportNumber string) error {
 	passportParts := strings.Split(passportNumber, " ")
 	if len(passportParts) != 2 {

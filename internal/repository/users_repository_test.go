@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -16,7 +17,7 @@ func TestGetUsers(t *testing.T) {
 	}
 	defer db.Close()
 
-	logger := log.New(nil, "", 0)
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 	repo := NewApiRepository(db, logger)
 
 	expectedUsers := []*models.User{
@@ -30,8 +31,8 @@ func TestGetUsers(t *testing.T) {
 		rows.AddRow(user.ID, user.PassportNumber, user.PassportSerie, user.Surname, user.Name, user.Patronymic, user.Address)
 	}
 
-	mock.ExpectQuery(`SELECT id, passportNumber, passportSerie, surname, name, patronymic, address FROM users WHERE 1=1 AND surname = \?$`).
-		WithArgs("Иванов").
+	mock.ExpectQuery(`SELECT id, passportNumber, passportSerie, surname, name, patronymic, address FROM users WHERE 1=1 AND surname LIKE \$1`).
+		WithArgs("%Иванов%").
 		WillReturnRows(rows)
 
 	users, err := repo.GetUsers(filter)
@@ -53,36 +54,6 @@ func TestGetUsers(t *testing.T) {
 	}
 }
 
-func TestGetUserByID(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
-	logger := log.New(nil, "", 0)
-	repo := NewApiRepository(db, logger)
-
-	expectedUser := &models.User{ID: 1, PassportNumber: "233445", PassportSerie: "1234", Surname: "Иванов", Name: "Иван", Patronymic: "Иванович", Address: "г. Москва"}
-
-	rows := sqlmock.NewRows([]string{"id", "passportNumber", "passportSerie", "surname", "name", "patronymic", "address"}).
-		AddRow(expectedUser.ID, expectedUser.PassportNumber, expectedUser.PassportSerie, expectedUser.Surname, expectedUser.Name, expectedUser.Patronymic, expectedUser.Address)
-
-	mock.ExpectQuery(`SELECT \* FROM users WHERE id = \$1$`).
-		WithArgs(1).
-		WillReturnRows(rows)
-
-	user, err := repo.GetUserByID(1)
-	assert.NoError(t, err)
-	assert.NotNil(t, user)
-	assert.Equal(t, expectedUser.ID, user.ID)
-	assert.Equal(t, expectedUser.Surname, user.Surname)
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
-	}
-}
-
 func TestCreateUser(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -90,7 +61,7 @@ func TestCreateUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	logger := log.New(nil, "", 0)
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 	repo := NewApiRepository(db, logger)
 
 	user := &models.User{
@@ -121,7 +92,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	logger := log.New(nil, "", 0)
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 	repo := NewApiRepository(db, logger)
 
 	user := &models.User{

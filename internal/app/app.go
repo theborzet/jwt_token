@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/theborzet/time-tracker/internal/config"
+	"github.com/theborzet/time-tracker/config"
 	database "github.com/theborzet/time-tracker/internal/db"
 	"github.com/theborzet/time-tracker/internal/delivery/http/handler"
 	"github.com/theborzet/time-tracker/internal/delivery/http/routes"

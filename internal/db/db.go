@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/theborzet/time-tracker/internal/config"
+	"github.com/theborzet/time-tracker/config"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -15,7 +15,7 @@ var DB *sqlx.DB
 
 func Init(cfg *config.Config) *sql.DB {
 	url := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Pass, cfg.DB.Name)
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName)
 
 	db, err := sql.Open("postgres", url)
 

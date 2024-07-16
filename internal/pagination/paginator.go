@@ -20,6 +20,10 @@ func PaginateUser(users []*models.User, page int) ([]*models.User, Paginator, er
 	paginator.PageSize = DefaultPageSize
 	paginator.TotalPages = (totalItems + DefaultPageSize - 1) / DefaultPageSize
 
+	if page > paginator.TotalPages {
+		return nil, paginator, errors.New("requested page exceeds total pages")
+	}
+
 	if page < 1 {
 		page = 1
 	} else if page > paginator.TotalPages {

@@ -15,6 +15,11 @@ definitions:
       message:
         type: string
     type: object
+  handler.SuccessResponse:
+    properties:
+      message:
+        type: string
+    type: object
   handler.request:
     properties:
       passportNumber:
@@ -82,7 +87,7 @@ definitions:
       total_pages:
         type: integer
     type: object
-host: localhost:3000
+host: localhost:8080
 info:
   contact: {}
   description: API for managing time tracking tasks
@@ -113,7 +118,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.CommonResponse'
+            $ref: '#/definitions/handler.SuccessResponse'
         "400":
           description: Bad Request
           schema:
@@ -142,7 +147,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.CommonResponse'
+            $ref: '#/definitions/handler.SuccessResponse'
         "400":
           description: Bad Request
           schema:
@@ -158,9 +163,29 @@ paths:
         in: query
         name: page
         type: integer
-      - description: Фильтры
+      - description: Номер паспорта
         in: query
-        name: filters
+        name: passportNumber
+        type: string
+      - description: Серия паспорта
+        in: query
+        name: passportSerie
+        type: string
+      - description: Фамилия
+        in: query
+        name: surname
+        type: string
+      - description: Имя
+        in: query
+        name: name
+        type: string
+      - description: Отчество
+        in: query
+        name: patronymic
+        type: string
+      - description: Адрес
+        in: query
+        name: address
         type: string
       produces:
       - application/json
@@ -198,7 +223,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.CommonResponse'
+            $ref: '#/definitions/handler.SuccessResponse'
         "400":
           description: Bad Request
           schema:
@@ -222,7 +247,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.CommonResponse'
+            $ref: '#/definitions/handler.SuccessResponse'
         "400":
           description: Bad Request
           schema:
@@ -285,7 +310,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.CommonResponse'
+            $ref: '#/definitions/handler.SuccessResponse'
         "400":
           description: Bad Request
           schema:

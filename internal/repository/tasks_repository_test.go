@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -15,7 +16,7 @@ func TestGetUserTasks(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
-	logger := log.New(nil, "", 0)
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 	repo := NewApiRepository(db, logger)
 
 	userID := 1
@@ -56,7 +57,8 @@ func TestStartTask(t *testing.T) {
 		t.Fatalf("an error '%s' occurred when opening a stub database connection", err)
 	}
 	defer db.Close()
-	logger := log.New(nil, "", 0)
+
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 	repo := NewApiRepository(db, logger)
 
 	userID := 1
@@ -83,7 +85,8 @@ func TestEndTask(t *testing.T) {
 		t.Fatalf("an error '%s' occurred when opening a stub database connection", err)
 	}
 	defer db.Close()
-	logger := log.New(nil, "", 0)
+
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 	repo := NewApiRepository(db, logger)
 
 	userId := 1

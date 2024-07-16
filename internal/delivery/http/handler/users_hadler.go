@@ -17,16 +17,22 @@ type request struct {
 // @Accept json
 // @Produce json
 // @Param page query int false "Номер страницы"
-// @Param filters query string false "Фильтры"
+// @Param passportNumber query string false "Номер паспорта"
+// @Param passportSerie query string false "Серия паспорта"
+// @Param surname query string false "Фамилия"
+// @Param name query string false "Имя"
+// @Param patronymic query string false "Отчество"
+// @Param address query string false "Адрес"
 // @Success 200 {object} CommonResponse{data=[]models.User}
 // @Failure 400 {object} ErrorResponse
 // @Router /user/ [get]
 func (h *ApiHandler) GetUsers(ctx *fiber.Ctx) error {
 	filters := make(map[string]string)
 
-	for key, values := range ctx.Queries() {
-		if len(values) > 0 {
-			filters[key] = values
+	for _, key := range []string{"passportNumber", "passportSerie", "surname", "name", "patronymic", "address"} {
+		value := ctx.Query(key)
+		if value != "" {
+			filters[key] = value
 		}
 	}
 
@@ -34,7 +40,8 @@ func (h *ApiHandler) GetUsers(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
 			Error:   err.Error(),
-			Message: "invalid page number"})
+			Message: "invalid page number",
+		})
 	}
 	users, paginator, err := h.serv.GetUsersWithPaginate(filters, page)
 	if err != nil {
@@ -57,7 +64,7 @@ func (h *ApiHandler) GetUsers(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param passporNumber body request true "Данные пользователя"
-// @Success 200 {object} CommonResponse
+// @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
 // @Router /user/create [post]
 func (h *ApiHandler) CreateUser(ctx *fiber.Ctx) error {
@@ -87,7 +94,7 @@ func (h *ApiHandler) CreateUser(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body models.User true "Данные пользователя"
-// @Success 200 {object} CommonResponse
+// @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
 // @Router /user/update [put]
 func (h *ApiHandler) UpdateUser(ctx *fiber.Ctx) error {
@@ -117,7 +124,7 @@ func (h *ApiHandler) UpdateUser(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID пользователя"
-// @Success 200 {object} CommonResponse
+// @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
 // @Router /user/{id} [delete]
 func (h *ApiHandler) DeleteUser(ctx *fiber.Ctx) error {

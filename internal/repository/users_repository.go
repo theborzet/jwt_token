@@ -6,15 +6,17 @@ import (
 	"github.com/theborzet/time-tracker/internal/models"
 )
 
-func (r *ApiRepository) GetUsers(filter map[string]string) ([]*models.User, error) {
+func (r *ApiRepository) GetUsers(filters map[string]string) ([]*models.User, error) {
 	var users []*models.User
 
 	query := "SELECT id, passportNumber, passportSerie, surname, name, patronymic, address FROM users WHERE 1=1"
 	args := make([]interface{}, 0)
+	argCount := 1
 
-	for k, v := range filter {
-		query += fmt.Sprintf(" AND %s = ?", k)
-		args = append(args, v)
+	for k, v := range filters {
+		query += fmt.Sprintf(" AND %s LIKE $%d", k, argCount)
+		args = append(args, "%"+v+"%")
+		argCount++
 	}
 
 	rows, err := r.db.Query(query, args...)
@@ -40,17 +42,6 @@ func (r *ApiRepository) GetUsers(filter map[string]string) ([]*models.User, erro
 	}
 
 	return users, nil
-}
-
-func (r *ApiRepository) GetUserByID(id int) (*models.User, error) {
-	var user models.User
-	err := r.db.QueryRow("SELECT * FROM users WHERE id = $1", id).
-		Scan(&user.ID, &user.PassportNumber, &user.PassportSerie, &user.Surname, &user.Name, &user.Patronymic, &user.Address)
-	if err != nil {
-		r.logger.Printf("Error getting user by ID: %v", err)
-		return nil, err
-	}
-	return &user, nil
 }
 
 func (r *ApiRepository) CreateUser(user *models.User) error {

@@ -41,6 +41,7 @@ func Run() {
 	handler := handler.NewApiHandler(service, debugLogger)
 
 	app := fiber.New()
+	// Настройка CORS для разрешения запросов из любых источников и указанных HTTP-методов
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",

@@ -19,6 +19,7 @@ func RegistrationRoutes(app *fiber.App, h *handler.ApiHandler) {
 	taskRoutes.Post("/start", h.StartTask)
 	taskRoutes.Post("/end", h.EndTask)
 
+	//Including swagger
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		URL: "/docs/swagger.json",
 	}))

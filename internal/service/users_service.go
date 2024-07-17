@@ -10,7 +10,6 @@ import (
 	"github.com/theborzet/time-tracker/internal/pagination"
 )
 
-// в ТЗ не было ничего сказано про обязательные поля для объектов, поэтому я сделаю обязательными только PassportNumber, PassportSerie, Surname, Name
 func InputDataError(user *models.User) error {
 	passportNumberInt, err := strconv.Atoi(user.PassportNumber)
 	if err != nil {
@@ -50,7 +49,7 @@ func (s *ApiService) GetUsersWithPaginate(filters map[string]string, page int) (
 func (s *ApiService) CreateUser(passportNumber string) error {
 	passportParts := strings.Split(passportNumber, " ")
 	if len(passportParts) != 2 {
-		return errors.New("Invalid passport format. Passport number should be in format '1234 567890'")
+		return errors.New("invalid passport format. Passport number should be in format '1234 567890'")
 	}
 
 	passportSerie := passportParts[0]

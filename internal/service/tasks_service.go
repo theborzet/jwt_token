@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/theborzet/time-tracker/internal/models"
-	"github.com/theborzet/time-tracker/internal/repository"
 )
 
 func (s *ApiService) GetUserTasks(userId int, start, end string) ([]*models.TaskTimeSpent, error) {
@@ -16,17 +15,17 @@ func (s *ApiService) GetUserTasks(userId int, start, end string) ([]*models.Task
 		return nil, errors.New("incorrect userId value")
 	}
 
-	startTime, err := time.Parse(repository.DateFormat, start)
+	startTime, err := time.Parse(DateFormat, start)
 	if err != nil {
 		return nil, err
 	}
-	endTime, err := time.Parse(repository.DateFormat, end)
+	endTime, err := time.Parse(DateFormat, end)
 	if err != nil {
 		return nil, err
 	}
 
-	startTimeFormatted := startTime.Format(repository.TimestampFormat)
-	endTimeFormatted := endTime.Format(repository.TimestampFormat)
+	startTimeFormatted := startTime.Format(TimestampFormat)
+	endTimeFormatted := endTime.Format(TimestampFormat)
 	tasks, err := s.repo.GetUserTasks(userId, startTimeFormatted, endTimeFormatted)
 
 	if err != nil {
@@ -45,7 +44,7 @@ func (s *ApiService) StartTask(userId int, taskName string) error {
 	}
 
 	startTime := time.Now()
-	if err := s.repo.StartTask(userId, taskName, startTime.Format(repository.TimestampFormat)); err != nil {
+	if err := s.repo.StartTask(userId, taskName, startTime.Format(TimestampFormat)); err != nil {
 		return err
 	}
 	return nil
@@ -59,7 +58,7 @@ func (s *ApiService) EndTask(userId int, taskName string) error {
 		return errors.New("incorrect userId value")
 	}
 	endTime := time.Now()
-	if err := s.repo.EndTask(userId, taskName, endTime.Format(repository.TimestampFormat)); err != nil {
+	if err := s.repo.EndTask(userId, taskName, endTime.Format(TimestampFormat)); err != nil {
 		return err
 	}
 	return nil

@@ -11,7 +11,7 @@ Time_tracker - это проект на Go, который использует 
 
 ## Установка и запуск
 1. Клонируйте репозиторий:
-   git clone "https://github.com/theborzet/test_task-binance-"
+   git clone "https://github.com/theborzet/time-tracker"
 
 2. Измените файл .env.example:
 

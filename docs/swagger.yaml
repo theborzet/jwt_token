@@ -258,7 +258,7 @@ paths:
       consumes:
       - application/json
       description: Получает задачи пользователя с заданными параметрами пагинации
-        и времени.
+        и времени. Формат передачи врмени "2006-01-02 15:04:05"
       parameters:
       - description: ID пользователя
         in: query

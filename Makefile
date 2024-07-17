@@ -10,7 +10,7 @@ run:
 	./main
 	
 test:
-    go test -v ./...
+	go test -v ./...
 
 docker-build:
 	docker build -t my-go-app .

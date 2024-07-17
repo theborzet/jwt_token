@@ -7,11 +7,6 @@ import (
 	"github.com/theborzet/time-tracker/internal/models"
 )
 
-const (
-	DateFormat      = "02.01.06 15:04:05"
-	TimestampFormat = "2006-01-02 15:04:05"
-)
-
 type Repository interface {
 	GetUsers(filter map[string]string) ([]models.User, error)
 	GetUserByID(id int) (*models.User, error)

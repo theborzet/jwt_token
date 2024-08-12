@@ -1,4 +1,3 @@
-# Targets
 .PHONY: all build run docker-build docker-run docker-stop migrate-up migrate-down docker-logs docker-restart
 
 all: build run

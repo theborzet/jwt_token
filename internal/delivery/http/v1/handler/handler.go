@@ -3,17 +3,12 @@ package handler
 import (
 	"log"
 
-	"github.com/theborzet/time-tracker/internal/pagination"
-	"github.com/theborzet/time-tracker/internal/service"
+	"github.com/theborzet/jwt_token/internal/service"
 )
 
-type CommonResponse struct {
-	Message   string                `json:"message"`
-	Data      interface{}           `json:"data,omitempty"`
-	Paginator *pagination.Paginator `json:"paginator,omitempty"`
-}
 type SuccessResponse struct {
-	Message string `json:"message"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type ErrorResponse struct {

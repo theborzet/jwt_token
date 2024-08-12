@@ -16,142 +16,23 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/task/end": {
+        "/issue-tokens/{id}": {
             "post": {
-                "description": "Завершает задачу для указанного пользователя с заданным названием задачи.",
+                "description": "Выдает пару Access и Refresh токенов для пользователя с указанным ID.",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Завершить задачу",
+                "summary": "Выдать токены",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "userId",
-                        "in": "query",
+                        "type": "string",
+                        "description": "ID пользователя (GUID)",
+                        "name": "id",
+                        "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Название задачи",
-                        "name": "taskName",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/task/start": {
-            "post": {
-                "description": "Начинает задачу для указанного пользователя с заданным названием задачи.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Начать задачу",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "userId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Название задачи",
-                        "name": "taskName",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/": {
-            "get": {
-                "description": "Получает список пользователей с учетом заданных фильтров и страницы.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить список пользователей",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Номер страницы",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Номер паспорта",
-                        "name": "passportNumber",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Серия паспорта",
-                        "name": "passportSerie",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Фамилия",
-                        "name": "surname",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Имя",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Отчество",
-                        "name": "patronymic",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Адрес",
-                        "name": "address",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -160,16 +41,16 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.CommonResponse"
+                                    "$ref": "#/definitions/handler.successResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.User"
-                                            }
+                                        " refresh_token": {
+                                            "type": "string"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -179,26 +60,39 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/handler.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errorResponse"
                         }
                     }
                 }
             }
         },
-        "/user/create": {
+        "/refresh-tokens/{id}": {
             "post": {
-                "description": "Создает нового пользователя на основе переданных данных.",
+                "description": "Обновляет пару Access и Refresh токенов, используя предоставленный Refresh токен.",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Создать пользователя",
+                "summary": "Обновить токены",
                 "parameters": [
                     {
-                        "description": "Данные пользователя",
-                        "name": "passporNumber",
+                        "type": "string",
+                        "description": "ID пользователя (GUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Refresh токен",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -210,65 +104,18 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/tasks": {
-            "get": {
-                "description": "Получает задачи пользователя с заданными параметрами пагинации и времени. Формат передачи врмени \"2006-01-02 15:04:05\"",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить задачи пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "userId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Начальное время",
-                        "name": "startTime",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Конечное время",
-                        "name": "endTime",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.CommonResponse"
+                                    "$ref": "#/definitions/handler.successResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.Task"
-                                            }
+                                        " refresh_token": {
+                                            "type": "string"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -278,79 +125,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/update": {
-            "put": {
-                "description": "Обновляет данные пользователя на основе переданных данных.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Обновить пользователя",
-                "parameters": [
-                    {
-                        "description": "Данные пользователя",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse"
+                            "$ref": "#/definitions/handler.errorResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/{id}": {
-            "delete": {
-                "description": "Удаляет пользователя на основе его идентификатора.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Удалить пользователя",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "$ref": "#/definitions/handler.errorResponse"
                         }
                     }
                 }
@@ -358,19 +139,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handler.CommonResponse": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "message": {
-                    "type": "string"
-                },
-                "paginator": {
-                    "$ref": "#/definitions/pagination.Paginator"
-                }
-            }
-        },
-        "handler.ErrorResponse": {
+        "handler.errorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -381,114 +150,22 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.SuccessResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "handler.request": {
             "type": "object",
             "properties": {
-                "passportNumber": {
+                "refresh_token": {
                     "type": "string"
                 }
             }
         },
-        "models.Task": {
+        "handler.successResponse": {
             "type": "object",
             "properties": {
-                "endTime": {
+                "access_token": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "startTime": {
+                "refresh_token": {
                     "type": "string"
-                },
-                "taskName": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.User": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "passportNumber": {
-                    "type": "string"
-                },
-                "passportSerie": {
-                    "type": "string"
-                },
-                "patronymic": {
-                    "type": "string"
-                },
-                "surname": {
-                    "type": "string"
-                }
-            }
-        },
-        "pagination.PageNumber": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "type": "boolean"
-                },
-                "number": {
-                    "type": "integer"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "pagination.Paginator": {
-            "type": "object",
-            "properties": {
-                "current_page": {
-                    "type": "integer"
-                },
-                "has_next": {
-                    "type": "boolean"
-                },
-                "has_previous": {
-                    "type": "boolean"
-                },
-                "next_page": {
-                    "type": "integer"
-                },
-                "page_numbers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/pagination.PageNumber"
-                    }
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "previous_page": {
-                    "type": "integer"
-                },
-                "total_items": {
-                    "type": "integer"
-                },
-                "total_pages": {
-                    "type": "integer"
                 }
             }
         }

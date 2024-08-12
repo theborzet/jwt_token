@@ -3,19 +3,12 @@ package repository
 import (
 	"database/sql"
 	"log"
-
-	"github.com/theborzet/time-tracker/internal/models"
+	"time"
 )
 
 type Repository interface {
-	GetUsers(filter map[string]string) ([]models.User, error)
-	GetUserByID(id int) (*models.User, error)
-	CreateUser(user *models.User) error
-	UpdateUser(user *models.User) error
-	DeleteUser(id int) error
-	GetUserTasks(userID int, start, end string) ([]models.Task, error)
-	StartTask(userID int, taskName string) error
-	EndTask(userID int) error
+	SaveRefreshTokenHash(userID, hash string, expiresAt time.Time) error
+	GetRefreshTokenHash(userID string) (string, time.Time, error)
 }
 
 type ApiRepository struct {

@@ -1,91 +1,23 @@
 basePath: /
 definitions:
-  handler.CommonResponse:
-    properties:
-      data: {}
-      message:
-        type: string
-      paginator:
-        $ref: '#/definitions/pagination.Paginator'
-    type: object
-  handler.ErrorResponse:
+  handler.errorResponse:
     properties:
       error:
         type: string
       message:
         type: string
     type: object
-  handler.SuccessResponse:
-    properties:
-      message:
-        type: string
-    type: object
   handler.request:
     properties:
-      passportNumber:
+      refresh_token:
         type: string
     type: object
-  models.Task:
+  handler.successResponse:
     properties:
-      endTime:
+      access_token:
         type: string
-      id:
-        type: integer
-      startTime:
+      refresh_token:
         type: string
-      taskName:
-        type: string
-      userId:
-        type: integer
-    type: object
-  models.User:
-    properties:
-      address:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      passportNumber:
-        type: string
-      passportSerie:
-        type: string
-      patronymic:
-        type: string
-      surname:
-        type: string
-    type: object
-  pagination.PageNumber:
-    properties:
-      is_active:
-        type: boolean
-      number:
-        type: integer
-      url:
-        type: string
-    type: object
-  pagination.Paginator:
-    properties:
-      current_page:
-        type: integer
-      has_next:
-        type: boolean
-      has_previous:
-        type: boolean
-      next_page:
-        type: integer
-      page_numbers:
-        items:
-          $ref: '#/definitions/pagination.PageNumber'
-        type: array
-      page_size:
-        type: integer
-      previous_page:
-        type: integer
-      total_items:
-        type: integer
-      total_pages:
-        type: integer
     type: object
 host: localhost:8080
 info:
@@ -95,97 +27,17 @@ info:
   title: Time Tracker API
   version: "1.0"
 paths:
-  /task/end:
+  /issue-tokens/{id}:
     post:
       consumes:
       - application/json
-      description: Завершает задачу для указанного пользователя с заданным названием
-        задачи.
+      description: Выдает пару Access и Refresh токенов для пользователя с указанным
+        ID.
       parameters:
-      - description: ID пользователя
-        in: query
-        name: userId
+      - description: ID пользователя (GUID)
+        in: path
+        name: id
         required: true
-        type: integer
-      - description: Название задачи
-        in: query
-        name: taskName
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handler.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Завершить задачу
-  /task/start:
-    post:
-      consumes:
-      - application/json
-      description: Начинает задачу для указанного пользователя с заданным названием
-        задачи.
-      parameters:
-      - description: ID пользователя
-        in: query
-        name: userId
-        required: true
-        type: integer
-      - description: Название задачи
-        in: query
-        name: taskName
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handler.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Начать задачу
-  /user/:
-    get:
-      consumes:
-      - application/json
-      description: Получает список пользователей с учетом заданных фильтров и страницы.
-      parameters:
-      - description: Номер страницы
-        in: query
-        name: page
-        type: integer
-      - description: Номер паспорта
-        in: query
-        name: passportNumber
-        type: string
-      - description: Серия паспорта
-        in: query
-        name: passportSerie
-        type: string
-      - description: Фамилия
-        in: query
-        name: surname
-        type: string
-      - description: Имя
-        in: query
-        name: name
-        type: string
-      - description: Отчество
-        in: query
-        name: patronymic
-        type: string
-      - description: Адрес
-        in: query
-        name: address
         type: string
       produces:
       - application/json
@@ -194,50 +46,37 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/handler.CommonResponse'
+            - $ref: '#/definitions/handler.successResponse'
             - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.User'
-                  type: array
+                ' refresh_token':
+                  type: string
+                access_token:
+                  type: string
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Получить список пользователей
-  /user/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Удаляет пользователя на основе его идентификатора.
-      parameters:
-      - description: ID пользователя
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
           schema:
-            $ref: '#/definitions/handler.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Удалить пользователя
-  /user/create:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Выдать токены
+  /refresh-tokens/{id}:
     post:
       consumes:
       - application/json
-      description: Создает нового пользователя на основе переданных данных.
+      description: Обновляет пару Access и Refresh токенов, используя предоставленный
+        Refresh токен.
       parameters:
-      - description: Данные пользователя
+      - description: ID пользователя (GUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Refresh токен
         in: body
-        name: passporNumber
+        name: request
         required: true
         schema:
           $ref: '#/definitions/handler.request'
@@ -247,73 +86,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Создать пользователя
-  /user/tasks:
-    get:
-      consumes:
-      - application/json
-      description: Получает задачи пользователя с заданными параметрами пагинации
-        и времени. Формат передачи врмени "2006-01-02 15:04:05"
-      parameters:
-      - description: ID пользователя
-        in: query
-        name: userId
-        required: true
-        type: integer
-      - description: Начальное время
-        in: query
-        name: startTime
-        type: string
-      - description: Конечное время
-        in: query
-        name: endTime
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
             allOf:
-            - $ref: '#/definitions/handler.CommonResponse'
+            - $ref: '#/definitions/handler.successResponse'
             - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.Task'
-                  type: array
+                ' refresh_token':
+                  type: string
+                access_token:
+                  type: string
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Получить задачи пользователя
-  /user/update:
-    put:
-      consumes:
-      - application/json
-      description: Обновляет данные пользователя на основе переданных данных.
-      parameters:
-      - description: Данные пользователя
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
           schema:
-            $ref: '#/definitions/handler.SuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Обновить пользователя
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Обновить токены
 swagger: "2.0"

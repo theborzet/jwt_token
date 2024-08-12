@@ -1,6 +1,6 @@
 package main
 
-import "github.com/theborzet/time-tracker/internal/app"
+import "github.com/theborzet/jwt_token/internal/app"
 
 // @title Time Tracker API
 // @version 1.0

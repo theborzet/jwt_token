@@ -1,17 +1,21 @@
-module github.com/theborzet/time-tracker
+module github.com/theborzet/jwt_token
 
 go 1.22
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/swagger v1.1.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
+	github.com/golang/mock v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/swag v1.16.3
+	golang.org/x/crypto v0.26.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -47,7 +51,6 @@ require (
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0 // indirect
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

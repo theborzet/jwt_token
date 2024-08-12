@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/theborzet/time-tracker/config"
+	config "github.com/theborzet/jwt_token/configs"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

@@ -6,13 +6,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/theborzet/time-tracker/config"
-	database "github.com/theborzet/time-tracker/internal/db"
-	"github.com/theborzet/time-tracker/internal/delivery/http/handler"
-	"github.com/theborzet/time-tracker/internal/delivery/http/routes"
-	"github.com/theborzet/time-tracker/internal/repository"
-	"github.com/theborzet/time-tracker/internal/service"
-	"github.com/theborzet/time-tracker/pkg/migrator"
+	config "github.com/theborzet/jwt_token/configs"
+	database "github.com/theborzet/jwt_token/internal/db"
+	"github.com/theborzet/jwt_token/internal/delivery/http/routes"
+	"github.com/theborzet/jwt_token/internal/delivery/http/v1/handler"
+	"github.com/theborzet/jwt_token/internal/repository"
+	"github.com/theborzet/jwt_token/internal/service"
+	"github.com/theborzet/jwt_token/pkg/auth"
+	"github.com/theborzet/jwt_token/pkg/migrator"
 )
 
 func Run() {
@@ -36,15 +37,16 @@ func Run() {
 
 	repo := repository.NewApiRepository(db, debugLogger)
 
-	service := service.NewApiService(repo, debugLogger, config)
+	tokenMananger := auth.NewManager(config)
+
+	service := service.NewApiService(repo, debugLogger, tokenMananger)
 
 	handler := handler.NewApiHandler(service, debugLogger)
 
 	app := fiber.New()
-	// Настройка CORS для разрешения запросов из любых источников и указанных HTTP-методов
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
-		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowMethods: "GET,POST,PUT,DELETE",
 	}))
 
 	routes.RegistrationRoutes(app, handler)

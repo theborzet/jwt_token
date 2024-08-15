@@ -14,6 +14,7 @@ func (s *ApiService) IssueTokens(userId, ipAddress string) (string, *auth.Refres
 	if userId == "" || ipAddress == "" {
 		return "", nil, errors.New("invalid input")
 	}
+	//Для обоюдной связи между токенами я выбрал tokenID
 	tokenId := uuid.New().String()
 
 	accessToken, err := s.tokenManager.NewJWT(userId, ipAddress, tokenId)

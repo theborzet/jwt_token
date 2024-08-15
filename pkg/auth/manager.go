@@ -13,18 +13,20 @@ import (
 type Claims struct {
 	UserID    string `json:"sub"`
 	IPAddress string `json:"ip"`
+	TokenID   string `json:"tip"`
 	jwt.StandardClaims
 }
 
 type RefreshToken struct {
 	Token     string
+	TokenID   string
 	ExpiresAt time.Time
 }
 
 type TokenManager interface {
-	NewJWT(userId, ipAddress string) (string, error)
-	ParseJWT(accessToken string) (string, string, error)
-	NewRefreshToken() (*RefreshToken, error)
+	NewJWT(userId, ipAddress, tokenID string) (string, error)
+	ParseJWT(accessToken string) (string, string, string, error)
+	NewRefreshToken(tokenID string) (*RefreshToken, error)
 }
 
 type Manager struct {
@@ -36,44 +38,49 @@ type Manager struct {
 func NewManager(cfg *config.Config) *Manager {
 	return &Manager{SigningKey: cfg.Token.SigningKey,
 		AccessTTL:  cfg.Token.AccessTokenLifetime,
-		RefreshTTL: cfg.Token.RefreshTokenLifetime}
+		RefreshTTL: cfg.Token.RefreshTokenLifetime,
+	}
 }
 
-func (m *Manager) NewJWT(userId, ipAddress string) (string, error) {
+func (m *Manager) NewJWT(userId, ipAddress, tokenID string) (string, error) {
 	claims := Claims{
 		UserID:    userId,
 		IPAddress: ipAddress,
+		TokenID:   tokenID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(m.AccessTTL).Unix(),
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
 	return token.SignedString([]byte(m.SigningKey))
 }
 
-func (m *Manager) ParseJWT(accessToken string) (string, string, error) {
-	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexcepted method: %v", token.Header["alg"])
+func (m *Manager) ParseJWT(accessToken string) (string, string, string, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || token.Header["alg"] != "HS512" {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-
 		return []byte(m.SigningKey), nil
 	})
+
+	fmt.Println(accessToken)
+
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
-	claims, ok := token.Claims.(Claims)
+	claims, ok := token.Claims.(*Claims)
+
 	if !ok || !token.Valid {
-		return "", "", fmt.Errorf("token receiving error")
+		return "", "", "", fmt.Errorf("token receiving error")
 	}
 
-	return claims.UserID, claims.IPAddress, nil
+	return claims.UserID, claims.IPAddress, claims.TokenID, nil
 }
 
-func (m *Manager) NewRefreshToken() (*RefreshToken, error) {
+func (m *Manager) NewRefreshToken(tokenID string) (*RefreshToken, error) {
 	b := make([]byte, 32)
 
 	if _, err := rand.Read(b); err != nil {
@@ -82,6 +89,7 @@ func (m *Manager) NewRefreshToken() (*RefreshToken, error) {
 	refreshToken := RefreshToken{
 		Token:     base64.StdEncoding.EncodeToString(b),
 		ExpiresAt: time.Now().Add(m.RefreshTTL),
+		TokenID:   tokenID,
 	}
 
 	return &refreshToken, nil

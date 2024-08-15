@@ -9,6 +9,8 @@ definitions:
     type: object
   handler.request:
     properties:
+      access_token:
+        type: string
       refresh_token:
         type: string
     type: object
@@ -27,7 +29,7 @@ info:
   title: Time Tracker API
   version: "1.0"
 paths:
-  /issue-tokens/{id}:
+  /api/v1/auth/token/{userID}:
     post:
       consumes:
       - application/json
@@ -36,7 +38,7 @@ paths:
       parameters:
       - description: ID пользователя (GUID)
         in: path
-        name: id
+        name: userID
         required: true
         type: string
       produces:
@@ -45,14 +47,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/handler.successResponse'
-            - properties:
-                ' refresh_token':
-                  type: string
-                access_token:
-                  type: string
-              type: object
+            $ref: '#/definitions/handler.successResponse'
         "400":
           description: Bad Request
           schema:
@@ -62,19 +57,19 @@ paths:
           schema:
             $ref: '#/definitions/handler.errorResponse'
       summary: Выдать токены
-  /refresh-tokens/{id}:
+  /api/v1/auth/token/refresh/{userID}:
     post:
       consumes:
       - application/json
-      description: Обновляет пару Access и Refresh токенов, используя предоставленный
-        Refresh токен.
+      description: Обновляет пару Access и Refresh токенов, используя предоставленные
+        Refresh и Access токены.
       parameters:
       - description: ID пользователя (GUID)
         in: path
-        name: id
+        name: userID
         required: true
         type: string
-      - description: Refresh токен
+      - description: Тело запроса с токенами
         in: body
         name: request
         required: true
@@ -86,14 +81,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/handler.successResponse'
-            - properties:
-                ' refresh_token':
-                  type: string
-                access_token:
-                  type: string
-              type: object
+            $ref: '#/definitions/handler.successResponse'
         "400":
           description: Bad Request
           schema:

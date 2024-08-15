@@ -35,13 +35,14 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // GetRefreshTokenHash mocks base method.
-func (m *MockRepository) GetRefreshTokenHash(userID string) (string, time.Time, error) {
+func (m *MockRepository) GetRefreshTokenHash(userID string) (string, string, time.Time, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRefreshTokenHash", userID)
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(time.Time)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(time.Time)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
 }
 
 // GetRefreshTokenHash indicates an expected call of GetRefreshTokenHash.
@@ -51,15 +52,15 @@ func (mr *MockRepositoryMockRecorder) GetRefreshTokenHash(userID interface{}) *g
 }
 
 // SaveRefreshTokenHash mocks base method.
-func (m *MockRepository) SaveRefreshTokenHash(userID, hash string, expiresAt time.Time) error {
+func (m *MockRepository) SaveRefreshTokenHash(userID, tokenID, hash string, expiresAt time.Time) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRefreshTokenHash", userID, hash, expiresAt)
+	ret := m.ctrl.Call(m, "SaveRefreshTokenHash", userID, tokenID, hash, expiresAt)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRefreshTokenHash indicates an expected call of SaveRefreshTokenHash.
-func (mr *MockRepositoryMockRecorder) SaveRefreshTokenHash(userID, hash, expiresAt interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) SaveRefreshTokenHash(userID, tokenID, hash, expiresAt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRefreshTokenHash", reflect.TypeOf((*MockRepository)(nil).SaveRefreshTokenHash), userID, hash, expiresAt)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRefreshTokenHash", reflect.TypeOf((*MockRepository)(nil).SaveRefreshTokenHash), userID, tokenID, hash, expiresAt)
 }

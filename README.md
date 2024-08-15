@@ -6,18 +6,20 @@ Time_tracker - это проект на Go, который использует 
 
 - Go
 - PostgreSQL
+- JWT
 - Docker
 - Docker Compose
 
 ## Установка и запуск
 1. Клонируйте репозиторий:
-   git clone "https://github.com/theborzet/time-tracker"
+   git clone "https://github.com/theborzet/jwt_token"
 
 2. Измените файл .env.example:
 
-    Введите конфигурацию для БД и url для внешного Api в этих файлах.
+    Введите конфигурацию для БД и подписи для JWT токенов в этих файлах.
 
     Уберите ".example" из названия файла
+3. При желании можете изменить ttl'ы токенов в файле configs/config.yaml:
 
 ### Запуск через Docker
 

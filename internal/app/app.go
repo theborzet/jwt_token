@@ -51,7 +51,7 @@ func Run() {
 
 	routes.RegistrationRoutes(app, handler)
 
-	if err := app.Listen(config.Port); err != nil {
+	if err := app.Listen(":" + config.Port); err != nil {
 		infoLogger.Fatalf("Error starting server: %v", err)
 	}
 

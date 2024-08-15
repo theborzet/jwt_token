@@ -7,8 +7,8 @@ import (
 )
 
 type Repository interface {
-	SaveRefreshTokenHash(userID, hash string, expiresAt time.Time) error
-	GetRefreshTokenHash(userID string) (string, time.Time, error)
+	SaveRefreshTokenHash(userID, tokenID, hash string, expiresAt time.Time) error
+	GetRefreshTokenHash(userID string) (string, string, time.Time, error)
 }
 
 type ApiRepository struct {

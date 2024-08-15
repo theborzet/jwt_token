@@ -34,7 +34,8 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = yaml.Unmarshal(yamlFile, &cfg.Token)
+
+	err = yaml.Unmarshal(yamlFile, &cfg)
 	if err != nil {
 		return nil, err
 	}

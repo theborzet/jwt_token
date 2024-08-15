@@ -12,8 +12,8 @@ func RegistrationRoutes(app *fiber.App, h *handler.ApiHandler) {
 	authRoutes := v1.Group("/auth")
 	tokenRoutes := authRoutes.Group("/token")
 
-	tokenRoutes.Post("/{userID}")
-	tokenRoutes.Post("/refresh/{userID}")
+	tokenRoutes.Post("/:userID", h.IssueTokensHandler)
+	tokenRoutes.Post("/refresh/:userID", h.RefreshTokensHandler)
 
 	//Including swagger
 	app.Get("/swagger/*", swagger.New(swagger.Config{

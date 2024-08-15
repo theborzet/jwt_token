@@ -16,45 +16,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/issue-tokens/{id}": {
+        "/api/v1/auth/token/refresh/{userID}": {
             "post": {
-                "description": "Выдает пару Access и Refresh токенов для пользователя с указанным ID.",
+                "description": "Обновляет пару Access и Refresh токенов, используя предоставленные Refresh и Access токены.",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Выдать токены",
+                "summary": "Обновить токены",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "ID пользователя (GUID)",
-                        "name": "id",
+                        "name": "userID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Тело запроса с токенами",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.request"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.successResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        " refresh_token": {
-                                            "type": "string"
-                                        },
-                                        "access_token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/handler.successResponse"
                         }
                     },
                     "400": {
@@ -72,54 +66,30 @@ const docTemplate = `{
                 }
             }
         },
-        "/refresh-tokens/{id}": {
+        "/api/v1/auth/token/{userID}": {
             "post": {
-                "description": "Обновляет пару Access и Refresh токенов, используя предоставленный Refresh токен.",
+                "description": "Выдает пару Access и Refresh токенов для пользователя с указанным ID.",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Обновить токены",
+                "summary": "Выдать токены",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "ID пользователя (GUID)",
-                        "name": "id",
+                        "name": "userID",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Refresh токен",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.request"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/handler.successResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        " refresh_token": {
-                                            "type": "string"
-                                        },
-                                        "access_token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/handler.successResponse"
                         }
                     },
                     "400": {
@@ -153,6 +123,9 @@ const docTemplate = `{
         "handler.request": {
             "type": "object",
             "properties": {
+                "access_token": {
+                    "type": "string"
+                },
                 "refresh_token": {
                     "type": "string"
                 }

@@ -7,6 +7,11 @@ import (
 	"github.com/theborzet/jwt_token/pkg/auth"
 )
 
+type Service interface {
+	IssueTokens(userId, ipAddress string) (string, *auth.RefreshToken, error)
+	RefreshTokens(userId, accessToken, refreshToken, ipAddress string) (string, string, error)
+}
+
 type ApiService struct {
 	repo         repository.Repository
 	logger       *log.Logger

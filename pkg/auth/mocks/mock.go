@@ -35,43 +35,44 @@ func (m *MockTokenManager) EXPECT() *MockTokenManagerMockRecorder {
 }
 
 // NewJWT mocks base method.
-func (m *MockTokenManager) NewJWT(userId, ipAddress string) (string, error) {
+func (m *MockTokenManager) NewJWT(userId, ipAddress, tokenID string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NewJWT", userId, ipAddress)
+	ret := m.ctrl.Call(m, "NewJWT", userId, ipAddress, tokenID)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // NewJWT indicates an expected call of NewJWT.
-func (mr *MockTokenManagerMockRecorder) NewJWT(userId, ipAddress interface{}) *gomock.Call {
+func (mr *MockTokenManagerMockRecorder) NewJWT(userId, ipAddress, tokenID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewJWT", reflect.TypeOf((*MockTokenManager)(nil).NewJWT), userId, ipAddress)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewJWT", reflect.TypeOf((*MockTokenManager)(nil).NewJWT), userId, ipAddress, tokenID)
 }
 
 // NewRefreshToken mocks base method.
-func (m *MockTokenManager) NewRefreshToken() (*auth.RefreshToken, error) {
+func (m *MockTokenManager) NewRefreshToken(tokenID string) (*auth.RefreshToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NewRefreshToken")
+	ret := m.ctrl.Call(m, "NewRefreshToken", tokenID)
 	ret0, _ := ret[0].(*auth.RefreshToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // NewRefreshToken indicates an expected call of NewRefreshToken.
-func (mr *MockTokenManagerMockRecorder) NewRefreshToken() *gomock.Call {
+func (mr *MockTokenManagerMockRecorder) NewRefreshToken(tokenID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewRefreshToken", reflect.TypeOf((*MockTokenManager)(nil).NewRefreshToken))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewRefreshToken", reflect.TypeOf((*MockTokenManager)(nil).NewRefreshToken), tokenID)
 }
 
 // ParseJWT mocks base method.
-func (m *MockTokenManager) ParseJWT(accessToken string) (string, string, error) {
+func (m *MockTokenManager) ParseJWT(accessToken string) (string, string, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ParseJWT", accessToken)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(string)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret2, _ := ret[2].(string)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
 }
 
 // ParseJWT indicates an expected call of ParseJWT.
